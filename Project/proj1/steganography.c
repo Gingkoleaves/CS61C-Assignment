@@ -21,13 +21,60 @@
 //Determines what color the cell at the given row/col should be. This should not affect Image, and should allocate space for a new Color.
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
-	//YOUR CODE HERE
+    Color *newColor = (Color *)malloc(sizeof(Color));
+    if (newColor == NULL) {
+        return NULL; 
+    }
+	uint8_t bp = (image->image[row][col].B & 1) ? 0xFF : 0x00;
+	newColor->R=bp;
+	newColor->G=bp;
+    newColor->B=bp;
+	return newColor;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
-	//YOUR CODE HERE
+	Image* img=malloc(sizeof(Image));
+	if(NULL==img){
+		return NULL;
+	}
+	
+	int cols=image->cols,rows=image->rows;
+	img->image=malloc(rows*sizeof(void*));	
+	if(NULL==img->image){
+        free(img);
+		return NULL;
+	}
+	img->cols=cols,img->rows=rows;	
+	for(int i=0;i<rows;i++)
+	{
+		img->image[i]=malloc(sizeof(Color)*cols);	
+		if(NULL==img->image[i]){
+		    for (int k = 0; k <= i; k++) {
+                free(img->image[k]);
+            }
+            free(img->image);
+        	free(img);
+			return NULL;
+		}
+		for(int j=0;j<cols;j++)
+		{
+			Color *nC=evaluateOnePixel(image,i,j);
+			if(NULL==nC){
+				for (int k = 0; k <= i; k++) 
+                    free(img->image[k]);
+                free(img->image);
+        		free(img);
+				return NULL;
+			}
+			img->image[i][j].R=nC->R;
+			img->image[i][j].G=nC->G;
+			img->image[i][j].B=nC->B;
+			free(nC);
+		}
+	}
+	return img;
 }
 
 /*
@@ -45,5 +92,19 @@ Make sure to free all memory before returning!
 */
 int main(int argc, char **argv)
 {
-	//YOUR CODE HERE
+	if(argc!=2){
+		printf("usage: %s filename\n",argv[0]);
+		printf("filename is an ASCII PPM file (type P3) with maximum value 255.\n");
+		return -1;
+	}
+	
+	char*filename=argv[1];
+	
+	Image* ppm=readData(filename);
+	Image* hidden_ppm=steganography(ppm);
+	writeData(hidden_ppm);
+	freeImage(hidden_ppm);
+	freeImage(ppm);
+	
+	return 0;
 }

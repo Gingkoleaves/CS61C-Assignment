@@ -1,4 +1,28 @@
+first_set:
 Which command walks a file hierarchy in search of a keyword?
+find -r [file]
+grep -r [keyword] [directory]
+
 Which command displays information about processes running on your machine?
+jobs只显示当前shell的作业
+ps\top\htop显示进程
+
 Which command terminates a process?
+kill [pid]/pkill [processname]
+
 Which command can help you find the difference between two files?
+diff [file1] [file2]
+
+second set:
+Move files from one directory to the next
+mv [addr1] [addr1]
+Change a file’s permissions
+chmod +x [file]
+Show the directory you’re currently in
+pwd
+Check if a host is online
+ping?
+
+third set:
+Show file permissions for all files in a directory
+ls -la
